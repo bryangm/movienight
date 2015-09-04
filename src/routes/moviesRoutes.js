@@ -5,7 +5,14 @@ var routes = function() {
     var moviesController = require('../controllers/moviesController')();
 
     moviesRouter.route('/')
-        .get(moviesController.get);
+        .get(moviesController.getMovies)
+        .post(moviesController.postMovie);
+
+    moviesRouter.route('/:movieId')
+        .get(moviesController.getMovie)
+        .put(moviesController.putMovie)
+        .patch(moviesController.patchMovie)
+        .delete(moviesController.deleteMovie);
 
     return moviesRouter;
 };

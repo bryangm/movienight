@@ -5,7 +5,14 @@ var routes = function() {
     var nightsController = require('../controllers/nightsController')();
 
     nightsRouter.route('/')
-        .get(nightsController.get);
+        .get(nightsController.getNights)
+        .post(nightsController.postNight);
+
+    nightsRouter.route('/:nightId')
+        .get(nightsController.getNight)
+        .put(nightsController.putNight)
+        .patch(nightsController.patchNight)
+        .delete(nightsController.deleteNight);
 
     return nightsRouter;
 };
