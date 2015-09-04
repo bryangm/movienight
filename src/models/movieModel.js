@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var personSchema = mongoose.Schema({
+var personSchema = Schema({
     firstName: {
         type: String,
         required: true
@@ -11,7 +12,7 @@ var personSchema = mongoose.Schema({
     },
 });
 
-var movieSchema = mongoose.Schema({
+var movieSchema = Schema({
     title: {
         type: String,
         required: true

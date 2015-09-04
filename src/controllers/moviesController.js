@@ -1,11 +1,30 @@
-var moviesController = function() {
+var moviesController = function(Movie) {
+
+    var findById = function(req, res, next) {
+        Movie.findById(req.params.movieId, function(err,movie) {
+            if (err) {
+                res.status(500).send(err);
+            } else if (movie) {
+                req.movie = movie;
+                next();
+            } else {
+                res.status(404).send('No movie found.');
+            }
+        });
+    }
 
     var getMovies = function(req, res) {
-        res.json({ controller: "Get Movies (GET)"});
+        Movie.find({}, function(err,movies) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.json(movies);
+            }
+        });
     };
 
     var getMovie = function(req, res) {
-        res.json({ controller: "Get Movie (GET)"});
+        res.json(req.movie);
     };
 
     var postMovie = function(req, res) {
@@ -25,6 +44,7 @@ var moviesController = function() {
     };
 
     return {
+        findById: findById,
         getMovies: getMovies,
         getMovie: getMovie,
         postMovie: postMovie,

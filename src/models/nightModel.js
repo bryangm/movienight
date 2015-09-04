@@ -1,8 +1,10 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var submissionSchema = mongoose.Schema({
+var submissionSchema = Schema({
     movieId: {
-        type: ObjectId
+        type: Schema.Types.ObjectId,
+        ref: 'Movie'
     },
     title: {
         type: String,
@@ -14,9 +16,9 @@ var submissionSchema = mongoose.Schema({
     }
 });
 
-var nightSchema = mongoose.Schema({
+var nightSchema = Schema({
     night: {
-        type: Date
+        type: Date,
         required: true
     },
     submissions: {
@@ -24,4 +26,4 @@ var nightSchema = mongoose.Schema({
     }
 });
 
-module.exports = = mongoose.model('Night', nightSchema);
+module.exports = mongoose.model('Night', nightSchema);
