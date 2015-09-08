@@ -32,15 +32,19 @@ var movieSchema = Schema({
     releaseDate: {
         type: Date
     },
-    director: {
+    directors: {
         type: [personSchema]
     },
-    writer: {
+    writers: {
         type: [personSchema]
     },
     cast: {
         type: [personSchema]
     }
+});
+
+movieSchema.virtual('id').get(function() {
+  return this._id.toString();
 });
 
 module.exports = mongoose.model('Movie', movieSchema);

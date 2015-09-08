@@ -1,6 +1,8 @@
+var _ = require('lodash');
+
 var moviesController = function(Movie) {
 
-    var findById = function(req, res, next) {
+    var findMovieById = function(req, res, next) {
         Movie.findById(req.params.movieId, function(err,movie) {
             if (err) {
                 res.status(500).send(err);
@@ -8,12 +10,12 @@ var moviesController = function(Movie) {
                 req.movie = movie;
                 next();
             } else {
-                res.status(404).send('No movie found.');
+                res.status(404).send('No movie found');
             }
         });
     }
 
-    var getMovies = function(req, res) {
+    var listMovies = function(req, res) {
         Movie.find({}, function(err,movies) {
             if (err) {
                 res.status(500).send(err);
@@ -23,34 +25,172 @@ var moviesController = function(Movie) {
         });
     };
 
-    var getMovie = function(req, res) {
+    var findMovie = function(req, res) {
         res.json(req.movie);
     };
 
-    var postMovie = function(req, res) {
-        res.json({ controller: "Create a Movie (POST)"});
+    var addMovie = function(req, res) {
+        var createMovie = new Movie(req.body);
+
+        if(!req.body.title) {
+            res.status(400);
+            res.send('Title is required');
+        } else {
+            createMovie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(201).json(createMovie);
+                }
+            });
+        }
     };
 
-    var putMovie = function(req, res) {
-        res.json({ controller: "Update a Movie (PUT)"});
-    };
+    var updateMovie = function(req, res) {
+        req.movie.title = req.body.title;
+        req.movie.year = req.body.year;
+        req.movie.rating = req.body.rating;
+        req.movie.length = req.body.length;
+        req.movie.genre = req.body.genre;
+        req.movie.releaseDate = req.body.releaseDate;
 
-    var patchMovie = function(req, res) {
-        res.json({ controller: "Update a Movie (PATCH)"});
+        req.movie.save(function(err) {
+            if(err) {
+                res.status(500).send(err);
+            } else {
+                res.json(req.movie);
+            }
+        });
     };
 
     var deleteMovie = function(req, res) {
-        res.json({ controller: "Delete a Movie (DELETE)"});
+        req.movie.remove(function(err) {
+            if(err) {
+                res.status(500).send(err);
+            } else {
+                res.status(204).send('Movie removed');
+            }
+        });
+    };
+
+    var addDirector = function(req, res) {
+        if(!req.body.firstName || !req.body.lastName) {
+            res.status(400);
+            res.send('First Name and Last Name are required');
+        } else {
+            req.movie.directors.push(req.body);
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
+    };
+
+    var deleteDirector = function(req, res) {
+        if (!_.find(req.movie.directors, { id: req.params.personId })) {
+            res.status(404);
+            res.send('Director not found');
+        } else {
+            _.remove(req.movie.directors, function(director) {
+                return director.id === req.params.personId;
+            });
+            req.movie.markModified('directors');
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
+    };
+
+    var addWriter = function(req, res) {
+        if(!req.body.firstName || !req.body.lastName) {
+            res.status(400);
+            res.send('First Name and Last Name are required');
+        } else {
+            req.movie.writers.push(req.body);
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
+    };
+
+    var deleteWriter = function(req, res) {
+        if (!_.find(req.movie.writers, { id: req.params.personId })) {
+            res.status(404);
+            res.send('Writer not found');
+        } else {
+            _.remove(req.movie.writers, function(writer) {
+                return writer.id === req.params.personId;
+            });
+            req.movie.markModified('writers');
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
+    };
+
+    var addCastMember = function(req, res) {
+        if(!req.body.firstName || !req.body.lastName) {
+            res.status(400);
+            res.send('First Name and Last Name are required');
+        } else {
+            req.movie.cast.push(req.body);
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
+    };
+
+    var deleteCastMember = function(req, res) {
+        if (!_.find(req.movie.cast, { id: req.params.personId })) {
+            res.status(404);
+            res.send('Cast member not found');
+        } else {
+            _.remove(req.movie.cast, function(castMember) {
+                return castMember.id === req.params.personId;
+            });
+            req.movie.markModified('cast');
+            req.movie.save(function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.json(req.movie);
+                }
+            });
+        }
     };
 
     return {
-        findById: findById,
-        getMovies: getMovies,
-        getMovie: getMovie,
-        postMovie: postMovie,
-        putMovie: putMovie,
-        patchMovie: patchMovie,
-        deleteMovie: deleteMovie
+        findMovieById: findMovieById,
+        listMovies: listMovies,
+        findMovie: findMovie,
+        addMovie: addMovie,
+        updateMovie: updateMovie,
+        deleteMovie: deleteMovie,
+        addDirector: addDirector,
+        deleteDirector: deleteDirector,
+        addWriter: addWriter,
+        deleteWriter: deleteWriter,
+        addCastMember: addCastMember,
+        deleteCastMember: deleteCastMember
     };
 };
 

@@ -1,14 +1,18 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 var settings = require('./settings/settings')
 var router = express.Router();
 
 var app = express();
 
-mongoose.connect(settings.mongodb.uri, settings.mongodb.options);
-
 var Movie = require('./models/movieModel');
 var Night = require('./models/nightModel');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
+mongoose.connect(settings.mongodb.uri, settings.mongodb.options);
 
 var moviesRouter = require('./routes/moviesRoutes')(Movie);
 var nightsRouter = require('./routes/nightsRoutes')(Night);
